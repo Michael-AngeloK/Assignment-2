@@ -30,7 +30,7 @@ func HandlerDiagnosis(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	//get mmediagroup API status code
-	resp, err := http.Get("https://covid-api.mmediagroup.fr/v1/history?country=Norway&status=Confirmed")
+	resp, err := http.Get("https://covid-api.mmediagroup.fr/v1/cases")
 	if err != nil {
 		fmt.Print(err.Error())
 	}
