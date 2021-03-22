@@ -4,11 +4,6 @@ import (
 	"encoding/json"
 )
 
-//
-type countryAlpha []struct {
-	AlphaCode string `json:"alpha3Code"`
-}
-
 // Outputs countryAlpha struct
 func convertToAlphaCode(country string) (string, error) {
 	var err error

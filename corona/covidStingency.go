@@ -11,22 +11,6 @@ import (
 )
 
 // NB!: NEEDS DATE VERIFICATION, ALPHA3CODE, COUNTRY, SCOPE = -1, ERRORS,
-//
-type coronaStringency struct {
-	Data map[string](map[string]Stringency) `json:"data"`
-}
-type Stringency struct {
-	Stringency_actual float64 `json:"stringency_actual"`
-	Stringency        float64 `json:"stringency"`
-}
-
-//
-type outputCoronaStringency struct {
-	Country    string  `json:"country"`
-	Scope      string  `json:"scope"`
-	Stringency float64 `json:"stringency"`
-	Trend      float64 `json:"trend"`
-}
 
 //
 func HandlerCoronaStringency(w http.ResponseWriter, r *http.Request) {

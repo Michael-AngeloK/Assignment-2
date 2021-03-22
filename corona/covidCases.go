@@ -11,25 +11,6 @@ import (
 )
 
 // NB!: NEEDS DATE VERIFICATION, IF SCOPE EMPTY AND CAN REDO UPDATEOUTPUT FUNCTION, ERRORS
-//
-type coronaCases struct {
-	All struct {
-		Country    string         `json:"country"`
-		Population int            `json:"population"`
-		Continent  string         `json:"continent"`
-		Dates      map[string]int `json:"dates"`
-	} `json:"All"`
-}
-
-//
-type outputCoronaCases struct {
-	Country               string  `json:"country"`
-	Continent             string  `json:"continent"`
-	Scope                 string  `json:"scope"`
-	Confirmed             int     `json:"confirmed"`
-	Recovered             int     `json:"recovered"`
-	Population_percentage float64 `json:"population_percentage"`
-}
 
 //
 func HandlerCoronaCase(w http.ResponseWriter, r *http.Request) {

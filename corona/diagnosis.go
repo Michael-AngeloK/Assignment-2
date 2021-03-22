@@ -7,15 +7,6 @@ import (
 	"time"
 )
 
-//diagnosis struct
-type diagnosis struct {
-	Mmediagroupapi  int    `json:"mmediagroupapi"`
-	Covidtrackerapi int    `json:"covidtrackerapi"`
-	Registered      int    `json:"registered"`
-	Version         string `json:"version"`
-	Uptime          string `json:"uptime"`
-}
-
 //variable to keep track of uptime
 var StartTime time.Time
 
