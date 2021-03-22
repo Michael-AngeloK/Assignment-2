@@ -17,7 +17,7 @@ func main() {
 	//corona Cases handler
 	http.HandleFunc("/corona/v1/country/", corona.HandlerCoronaCase)
 	//corona Stingency handler
-	http.HandleFunc("/corona/v1/policy/", corona.HandlerCoronaStingency)
+	http.HandleFunc("/corona/v1/policy/", corona.HandlerCoronaStringency)
 	//diagnosis handler
 	http.HandleFunc("/corona/v1/diag/", corona.HandlerDiagnosis)
 	//notifications handler
