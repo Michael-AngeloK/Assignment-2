@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"main/functions"
+	"math"
 	"net/http"
 	"net/url"
 	"strings"
 )
 
+// NEEDS DATE VERIFICATION AND CAN REDO UPDATEOUTPUT FUNCTION
 //
 type coronaCases struct {
 	All struct {
@@ -28,12 +30,12 @@ type coronaCases struct {
 
 //
 type outputCoronaCases struct {
-	Country               string `json:"country"`
-	Continent             string `json:"continent"`
-	Scope                 string `json:"scope"`
-	Confirmed             string `json:"confirmed"`
-	Recovered             string `json:"recovered"`
-	Population_percentage string `json:"population_percentage"`
+	Country               string  `json:"country"`
+	Continent             string  `json:"continent"`
+	Scope                 string  `json:"scope"`
+	Confirmed             int     `json:"confirmed"`
+	Recovered             int     `json:"recovered"`
+	Population_percentage float64 `json:"population_percentage"`
 }
 
 //
@@ -70,6 +72,7 @@ func HandlerCoronaCase(w http.ResponseWriter, r *http.Request) {
 		//if "scope" parameter DOESN'T exist
 		//scope is already empty if unchanged
 	}
+
 	var confirmedCases coronaCases
 	var recoveredCases coronaCases
 	err = getCoronaCases(&confirmedCases, &recoveredCases, country)
@@ -78,8 +81,8 @@ func HandlerCoronaCase(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//var dataOutput coronaCases
-	//err = getCoronaCases(&dataOutput, date)
+	var dataOutput outputCoronaCases
+	updateOutput(&confirmedCases, &recoveredCases, &dataOutput, scope)
 	if err != nil {
 		fmt.Print(err.Error())
 		return
@@ -87,7 +90,7 @@ func HandlerCoronaCase(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	err = json.NewEncoder(w).Encode(confirmedCases)
+	err = json.NewEncoder(w).Encode(dataOutput)
 	if err != nil {
 		fmt.Print(err.Error())
 		return
@@ -98,8 +101,6 @@ func HandlerCoronaCase(w http.ResponseWriter, r *http.Request) {
 func getCoronaCases(c *coronaCases, r *coronaCases, country string) error {
 	var err error
 	url := ""
-	//startDate := date[:10]
-	//endDate := date[11:]
 
 	url = "https://covid-api.mmediagroup.fr/v1/history?country=" + country + "&status=Confirmed"
 	confirmedOutput, err := requestRawData(url)
@@ -118,4 +119,22 @@ func getCoronaCases(c *coronaCases, r *coronaCases, country string) error {
 
 	err = json.Unmarshal(recoveredOutput, &r)
 	return err
+}
+
+//
+func updateOutput(confirmed *coronaCases, recovered *coronaCases, output *outputCoronaCases, scope string) {
+	startDate := scope[:10]
+	endDate := scope[11:]
+	//country name
+	output.Country = confirmed.All.Country
+	//continent
+	output.Continent = confirmed.All.Continent
+	//scope
+	output.Scope = scope
+	//confirmed
+	output.Confirmed = confirmed.All.Dates[endDate] - confirmed.All.Dates[startDate]
+	//recovered
+	output.Recovered = recovered.All.Dates[endDate] - recovered.All.Dates[startDate]
+	//population_percentage
+	output.Population_percentage = math.Round((float64(output.Confirmed)/float64(confirmed.All.Population)*100)*100) / 100
 }
