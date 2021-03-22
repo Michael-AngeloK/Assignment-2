@@ -14,17 +14,10 @@ import (
 //
 type coronaCases struct {
 	All struct {
-		Country             string         `json:"country"`
-		Population          int            `json:"population"`
-		Sq_km_area          int            `json:"sq_km_area"`
-		Life_expectancy     string         `json:"life_expectancy"`
-		Elevation_in_meters int            `json:"elevation_in_meters"`
-		Continent           string         `json:"continent"`
-		Abbrevation         string         `json:"abbreviation"`
-		Location            string         `json:"location"`
-		Iso                 int            `json:"iso"`
-		Capital_city        string         `json:"capital_city"`
-		Dates               map[string]int `json:"dates"`
+		Country    string         `json:"country"`
+		Population int            `json:"population"`
+		Continent  string         `json:"continent"`
+		Dates      map[string]int `json:"dates"`
 	} `json:"All"`
 }
 
@@ -92,7 +85,7 @@ func HandlerCoronaCase(w http.ResponseWriter, r *http.Request) {
 }
 
 //
-func getCoronaCases(c *coronaCases, r *coronaCases, country string) error {
+func getCoronaCases(confirmed *coronaCases, recovered *coronaCases, country string) error {
 	var err error
 	url := ""
 	//gets confirmed cases data
@@ -101,7 +94,7 @@ func getCoronaCases(c *coronaCases, r *coronaCases, country string) error {
 	if err != nil {
 		return err
 	}
-	err = json.Unmarshal(confirmedOutput, &c)
+	err = json.Unmarshal(confirmedOutput, &confirmed)
 	if err != nil {
 		return err
 	}
@@ -112,7 +105,7 @@ func getCoronaCases(c *coronaCases, r *coronaCases, country string) error {
 		return err
 	}
 	//outputs data to pointer
-	err = json.Unmarshal(recoveredOutput, &r)
+	err = json.Unmarshal(recoveredOutput, &recovered)
 	return err
 }
 
