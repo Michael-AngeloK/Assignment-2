@@ -6,5 +6,5 @@ import (
 
 //
 func GetURL(r *http.Request) string {
-	return r.URL.String()
+	return r.URL.Path
 }
