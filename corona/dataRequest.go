@@ -12,7 +12,7 @@ func requestRawData(url string) ([]byte, error) {
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	client := http.Client{
-		Timeout: time.Second * 2,
+		Timeout: time.Second * 10,
 	}
 	res, err := client.Do(req)
 	if err != nil {
