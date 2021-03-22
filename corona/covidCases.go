@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-// NEEDS DATE VERIFICATION AND CAN REDO UPDATEOUTPUT FUNCTION
+// NB!: NEEDS DATE VERIFICATION, IF SCOPE EMPTY AND CAN REDO UPDATEOUTPUT FUNCTION
 //
 type coronaCases struct {
 	All struct {
@@ -41,24 +41,22 @@ type outputCoronaCases struct {
 //
 func HandlerCoronaCase(w http.ResponseWriter, r *http.Request) {
 	var err error
-	// 0local , 1corona , 2v1 , 3country , 4countryNameandSCOPE
-	urlArray := strings.Split(functions.GetURL(r), "/")
 
+	urlArray := strings.Split(functions.GetURL(r), "/")
+	//checks if required parameters are in place
 	if len(urlArray) != 5 {
 		fmt.Print(err.Error())
 		return
 	}
-
-	// Norway, scope=2020-12-01-2021-01-31
+	//
 	urlParameters, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {
 		fmt.Print(err.Error())
 		return
 	}
-
+	//
 	country := urlArray[4]
 	scope := ""
-
 	//if "scope" parameter DOES exist
 	if len(urlParameters) > 0 {
 		if scopeParameter, ok := urlParameters["scope"]; ok {
@@ -72,7 +70,7 @@ func HandlerCoronaCase(w http.ResponseWriter, r *http.Request) {
 		//if "scope" parameter DOESN'T exist
 		//scope is already empty if unchanged
 	}
-
+	//gets data from api
 	var confirmedCases coronaCases
 	var recoveredCases coronaCases
 	err = getCoronaCases(&confirmedCases, &recoveredCases, country)
@@ -80,16 +78,12 @@ func HandlerCoronaCase(w http.ResponseWriter, r *http.Request) {
 		fmt.Print(err.Error())
 		return
 	}
-
+	//reformats and updates the date for the output
 	var dataOutput outputCoronaCases
-	updateOutput(&confirmedCases, &recoveredCases, &dataOutput, scope)
-	if err != nil {
-		fmt.Print(err.Error())
-		return
-	}
-
+	updateOutputCoronaCases(&confirmedCases, &recoveredCases, &dataOutput, scope)
+	//set header to json
 	w.Header().Set("Content-Type", "application/json")
-
+	//sends output
 	err = json.NewEncoder(w).Encode(dataOutput)
 	if err != nil {
 		fmt.Print(err.Error())
@@ -101,7 +95,7 @@ func HandlerCoronaCase(w http.ResponseWriter, r *http.Request) {
 func getCoronaCases(c *coronaCases, r *coronaCases, country string) error {
 	var err error
 	url := ""
-
+	//gets confirmed cases data
 	url = "https://covid-api.mmediagroup.fr/v1/history?country=" + country + "&status=Confirmed"
 	confirmedOutput, err := requestRawData(url)
 	if err != nil {
@@ -111,18 +105,19 @@ func getCoronaCases(c *coronaCases, r *coronaCases, country string) error {
 	if err != nil {
 		return err
 	}
+	//gets recovered cases data
 	url = "https://covid-api.mmediagroup.fr/v1/history?country=" + country + "&status=Recovered"
 	recoveredOutput, err := requestRawData(url)
 	if err != nil {
 		return err
 	}
-
+	//outputs data to pointer
 	err = json.Unmarshal(recoveredOutput, &r)
 	return err
 }
 
 //
-func updateOutput(confirmed *coronaCases, recovered *coronaCases, output *outputCoronaCases, scope string) {
+func updateOutputCoronaCases(confirmed *coronaCases, recovered *coronaCases, output *outputCoronaCases, scope string) {
 	startDate := scope[:10]
 	endDate := scope[11:]
 	//country name
