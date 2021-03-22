@@ -6,24 +6,24 @@ import (
 
 //
 type countryAlpha []struct {
-	Alpha3Code string `json:"alpha3Code"`
+	AlphaCode string `json:"alpha3Code"`
 }
 
-//
-func handlerConvertToAlpha(country string) (string, error) {
+// Outputs countryAlpha struct
+func convertToAlphaCode(country string) (string, error) {
 	var err error
-	var inpData countryAlpha
+	var inputData countryAlpha
 
-	err = getCountryAlpha(&inpData, country)
+	err = getAlphaCode(&inputData, country)
 	if err != nil {
 		return "", err
 	}
-	outData := inpData[0].Alpha3Code
-	return outData, err
+	outputData := inputData[0].AlphaCode
+	return outputData, err
 }
 
 //
-func getCountryAlpha(c *countryAlpha, country string) error {
+func getAlphaCode(c *countryAlpha, country string) error {
 	var err error
 	url := "https://restcountries.eu/rest/v2/name/" + country + "?fields=alpha3Code"
 

@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-// NB!: NEEDS DATE VERIFICATION, ALPHA3CODE, COUNTRY, SCOP
+// NB!: NEEDS DATE VERIFICATION, ALPHA3CODE, COUNTRY, SCOPE = -1, ERRORS,
 //
 type coronaStringency struct {
 	Data map[string](map[string]Stringency) `json:"data"`
@@ -44,7 +44,10 @@ func HandlerCoronaStringency(w http.ResponseWriter, r *http.Request) {
 		fmt.Print(err.Error())
 		return
 	}
-	//country := urlArray[4]
+	var country []string
+	country = append(country, urlArray[4])
+	//convert to alpha code
+	country[0], err = convertToAlphaCode(country[0])
 	scope := ""
 	//if "scope" parameter DOES exist
 	if len(urlParameters) > 0 {
@@ -68,7 +71,7 @@ func HandlerCoronaStringency(w http.ResponseWriter, r *http.Request) {
 	}
 	//reformats and updates the date for the output
 	var dataOutput outputCoronaStringency
-	updateOutputCoronaStringency(&stringencyData, &dataOutput, "FRA", scope)
+	updateOutputCoronaStringency(&stringencyData, &dataOutput, country[0], scope)
 	//set header to json
 	w.Header().Set("Content-Type", "application/json")
 	//sends output
@@ -83,21 +86,23 @@ func HandlerCoronaStringency(w http.ResponseWriter, r *http.Request) {
 func getCoronaStringency(corona *coronaStringency, scope string) error {
 	var err error
 	url := ""
+	//dates
 	startDate := scope[:10]
 	endDate := scope[11:]
+
 	//gets confirmed cases data
 	url = "https://covidtrackerapi.bsg.ox.ac.uk/api/v2/stringency/date-range/" + startDate + "/" + endDate
 	confirmedOutput, err := requestRawData(url)
 	if err != nil {
 		return err
 	}
-	fmt.Println(url)
 	err = json.Unmarshal(confirmedOutput, &corona)
 	return err
 }
 
 //
 func updateOutputCoronaStringency(stringency *coronaStringency, output *outputCoronaStringency, alphaCode string, scope string) {
+	//dates
 	startDate := scope[:10]
 	endDate := scope[11:]
 	//country name
